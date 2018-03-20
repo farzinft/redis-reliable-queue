@@ -1,0 +1,20 @@
+{
+    "name": "fthi/reliable-queue",
+    "authors": [
+        {
+            "name": "farzin fthi",
+            "email": "farzin.fthi@gmail.com"
+        }
+    ],
+    "require": {
+        "predis/predis": "1.1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Reliable\\": "src/"
+        },
+        "files": [
+            "config/queue.php"
+        ]
+    }
+}
