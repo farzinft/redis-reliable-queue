@@ -15,9 +15,9 @@ foreach ($files as $file) {
 
 use Reliable\QueueConsumer;
 
-QueueConsumer::connect();
+QueueConsumer::getInstance();
 
-fwrite(STDOUT, 'Started Sweep Worker' . "\n");
+QueueConsumer::log('Started sweep Worker');
 
 while (true) {
     while (QueueConsumer::sweepUp() !== false) ;
