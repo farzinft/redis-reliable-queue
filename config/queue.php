@@ -6,7 +6,7 @@ return [
     'WORKING_TIMESTAMP_QUEUE' => 'reliable:timestamp_working',
     'DELAYED_QUEUE' => 'reliable:delayed_queue',
     'QUEUE_TIMEOUT' => 20,
-    'TASK_TRY_COUNT' => 5,
+    'JOB_TRY_COUNT' => 5,
     'PROCESS_COUNT' => 2,
-    'DEFAULT_TASK_DELAY' => 5
+    'DEFAULT_JOB_DELAY' => 5
 ];

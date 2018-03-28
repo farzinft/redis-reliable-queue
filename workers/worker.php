@@ -17,31 +17,29 @@ $config = include __DIR__ . '/../config/queue.php';
 
 $processCount = $config['PROCESS_COUNT'];
 
-use Reliable\QueueConsumer;
+use \Reliable\ReliableQueue;
 
-QueueConsumer::log('Started Consumer Worker');
+ReliableQueue::log('Started Consumer Worker');
 
 //$consumer = QueueConsumer::connect();
 
 if ($processCount > 1) {
 
     for ($i = 0; $i < $processCount; $i++) {
-        $pid = QueueConsumer::fork();
+        $pid = ReliableQueue::fork();
 
-        if($pid === false || $pid === -1) {
-            QueueConsumer::log('Could not fork worker');
-            die();
+        if ($pid === false || $pid === -1) {
+            ReliableQueue::log('Could not fork worker');
         }
 
         if ($pid == 0) {
             //child process
-            $consumer = QueueConsumer::getInstance();
-            $consumer->consume();
+            ReliableQueue::getInstance()->dequeue();
             exit;
         }
     }
 } else {
-    QueueConsumer::getInstance()->consume();
+    ReliableQueue::getInstance()->dequeue();
 }
 
 

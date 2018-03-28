@@ -7,6 +7,6 @@ $config = include __DIR__ . '/../config/queue.php';
 
 $processCount = $config['PROCESS_COUNT'];
 
-use Reliable\QueueConsumer;
+use \Reliable\ReliableQueue;
 
-QueueConsumer::getInstance()->handleDelayedTasks();
+ReliableQueue::getInstance()->handleDelayedJobs();

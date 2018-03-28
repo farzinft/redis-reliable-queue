@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Reliable\QueueConsumer;
+use \Reliable\ReliableQueue;
 
-QueueConsumer::getInstance()->killWorkerPids();
+ReliableQueue::getInstance()->killWorkerPids();
 
-QueueConsumer::log('ok killed all Pids');
+ReliableQueue::log('ok killed all Pids');
 

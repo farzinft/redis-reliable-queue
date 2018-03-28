@@ -13,13 +13,13 @@ foreach ($files as $file) {
     }
 }
 
-use Reliable\QueueConsumer;
+use \Reliable\ReliableQueue;
 
-QueueConsumer::getInstance();
+$reliableQueue = ReliableQueue::getInstance();
 
-QueueConsumer::log('Started sweep Worker');
+ReliableQueue::log('Started sweep Worker');
 
 while (true) {
-    while (QueueConsumer::sweepUp() !== false) ;
+    while ($reliableQueue->sweep() !== false) ;
     sleep(1);
 }

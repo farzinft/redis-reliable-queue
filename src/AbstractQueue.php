@@ -6,7 +6,10 @@ use Predis\Client;
 
 class AbstractQueue
 {
-    protected static $client;
+    protected $redis;
+    protected $uuid;
+    protected $job;
+    
     protected static $instance;
     protected static $PENDING_QUEUES;
     protected static $PENDING_QUEUE_VALUES;
@@ -14,14 +17,14 @@ class AbstractQueue
     protected static $TIME_OUT;
     protected static $PROCESS_COUNT;
     protected static $DELAYED_QUEUE;
-    protected static $TASKTRY;
-    protected static $DEFAULT_TASK_DELAY;
+    protected static $JOBTRY;
+    protected static $DEFAULT_JOB_DELAY;
     /**
      * @return mixed
      */
-    public static function getClient()
+    public function getRedis()
     {
-        return self::$client;
+        return $this->redis;
     }
 
 
@@ -34,30 +37,30 @@ class AbstractQueue
         static::$TIME_OUT = $config['QUEUE_TIMEOUT'];
         static::$PROCESS_COUNT = $config['PROCESS_COUNT'];
         static::$DELAYED_QUEUE = $config['DELAYED_QUEUE'];
-        static::$TASKTRY = $config['TASK_TRY_COUNT'];
-        static::$DEFAULT_TASK_DELAY = $config['DEFAULT_TASK_DELAY'];
-        static::$client = $this->connector($options);
+        static::$JOBTRY = $config['JOB_TRY_COUNT'];
+        static::$DEFAULT_JOB_DELAY = $config['DEFAULT_JOB_DELAY'];
+        $this->redis = $this->connector($options);
     }
 
     /**
      * @return mixed
      */
-    public static function getdefaultTaskDelay()
+    public static function getDefaultJobDelay()
     {
-        return self::$DEFAULT_TASK_DELAY;
+        return self::$DEFAULT_JOB_DELAY;
     }
 
     /**
      * @return mixed
      */
-    public static function getTaskTry()
+    public static function getJOBTRY()
     {
-        return self::$TASKTRY;
+        return self::$JOBTRY;
     }
 
     private function getConfigs()
     {
-        return  include __DIR__ . '/../config/queue.php';
+        return include __DIR__ . '/../config/queue.php';
     }
 
     public function connector($options = [])
@@ -72,11 +75,7 @@ class AbstractQueue
     public static function getInstance($options = [])
     {
         if(!isset(static::$instance)) {
-            if(get_called_class() == QueueProducer::class) {
-                static::$instance = new QueueProducer($options);
-            }else {
-                static::$instance = new QueueConsumer($options);
-            }
+            static::$instance = new ReliableQueue($options);
         }
         return static::$instance;
     }
@@ -101,6 +100,75 @@ class AbstractQueue
     public function getProcessCount()
     {
         return static::$PROCESS_COUNT;
+    }
+
+    protected function setWorkerPids($pid)
+    {
+        $this->redis->lpush('worker_pids', $pid);
+    }
+
+    protected static function formatJob($job)
+    {
+        if(is_array($job)) {
+            return json_encode($job);
+        }
+        return $job;
+    }
+
+    protected function popJob()
+    {
+        $this->uuid = $this->redis->rpop(static::$PENDING_QUEUES);
+        if ($this->uuid) {
+            $this->redis->zadd(static::$WORKING_QUEUE, [
+                $this->uuid => time()
+            ]);
+            static::log('job ' . $this->uuid . ' added to ' . static::$WORKING_QUEUE);
+            $this->job = json_decode($this->getJobFromQueue($this->uuid), true);
+            return $this->job;
+        } else {
+            return false;
+        }
+    }
+
+
+    protected  function queueHasJob($uuid)
+    {
+        $items = $this->redis->lrange(static::$PENDING_QUEUES, 0, -1);
+        foreach ($items as $item) {
+            if ($item == $uuid) return true;
+        }
+        return false;
+    }
+
+    protected function getJobFromQueue($uuid)
+    {
+        return  $this->redis->hget(static::$PENDING_QUEUE_VALUES, $uuid);
+    }
+
+    public static function fork()
+    {
+        if (!function_exists('pcntl_fork')) {
+            return false;
+        }
+
+        $pid = pcntl_fork();
+        if ($pid === -1) {
+            throw new \RuntimeException('Unable to fork child worker.');
+        }
+        return $pid;
+    }
+
+    protected function getWorkerPids()
+    {
+        return $this->redis->lrange('worker_pids', 0, -1);
+    }
+
+    public function killWorkerPids()
+    {
+        foreach ($this->getWorkerPids() as $pid) {
+            posix_kill($pid, SIGKILL);
+        }
+        return $this->redis->del('worker_pids');
     }
 
 }
