@@ -1,21 +1,28 @@
 #!/usr/bin/env php
 <?php
 
-$files = array(
-    //Add Your Application Autoload File
-    __DIR__ . '/../../../../vendor/autoload.php',
+$files = [
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../../../autoload.php',
     __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../../vendor/autoload.php'
+];
 
-);
+$found = false;
 
 foreach ($files as $file) {
     if (file_exists($file)) {
         require_once $file;
-        break;
+        $found = true;
     }
 }
 
-use \Reliable\ReliableQueue;
+if($found == false) {
+    exit('can not load autoload file');
+}
+
+use Reliable\ReliableQueue;
 
 
 $config = include __DIR__ . '/../config/queue.php';
@@ -48,13 +55,21 @@ if ($processCount > 1) {
 
 function bootLaravel()
 {
-    $laravel = require_once __DIR__ . '/../../../../bootstrap/app.php';
 
-    $kernel = $laravel->make(Illuminate\Contracts\Console\Kernel::class);
+    $appPath = __DIR__ . '/../../../../bootstrap/app.php';
 
-    $kernel->bootstrap();
+    if(file_exists($appPath)) {
 
-    return $laravel;
+        $laravel = require_once __DIR__ . '/../../../../bootstrap/app.php';
+
+        $kernel = $laravel->make(Illuminate\Contracts\Console\Kernel::class);
+
+        $kernel->bootstrap();
+
+        return $laravel;
+    }
+
+    exit('can not load laravel application');
 }
 
 ?>

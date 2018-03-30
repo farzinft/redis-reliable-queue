@@ -23,7 +23,10 @@ if($found == false) {
     exit('can not load autoload file');
 }
 
+
 use \Reliable\ReliableQueue;
 
-ReliableQueue::getInstance()->handleDelayedJobs();
-?>
+ReliableQueue::getInstance()->killWorkerPids();
+
+ReliableQueue::log('ok killed all Pids');
+

@@ -1,17 +1,28 @@
+#!/usr/bin/env php
 <?php
 
-$files = array(
-    //Add Your Application Autoload File
-    __DIR__ . '/../../../../vendor/autoload.php',
+
+$files = [
+    __DIR__ . '/../../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../../../autoload.php',
     __DIR__ . '/../vendor/autoload.php',
-);
+    __DIR__ . '/../../../../vendor/autoload.php'
+];
+
+$found = false;
 
 foreach ($files as $file) {
     if (file_exists($file)) {
         require_once $file;
-        break;
+        $found = true;
     }
 }
+
+if($found == false) {
+    exit('can not load autoload file');
+}
+
 
 $workersPath = __DIR__ . '/../workers';
 
