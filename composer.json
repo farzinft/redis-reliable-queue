@@ -1,39 +1,29 @@
 {
-    "name": "fthi/reliable-queue",
-    "authors": [
-        {
-            "name": "farzin fthi",
-            "email": "farzin.fthi@gmail.com"
-        }
-    ],
-    "require": {
-        "predis/predis": "1.1.1",
-        "ext-pcntl": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Reliable\\": "src/"
-        },
-        "files": [
-            "config/queue.php"
-        ]
-    },
-    "config": {
-        "bin-dir": "./reliable-queue"
-    },
-    "bin": [
-        "bin/worker",
-        "bin/delayed",
-        "bin/sweep"
-    ],
-    "scripts":{
-        "post-install-cmd": [
-            "mkdir -p ./reliable-queue",
-            "php -r \"copy('config/queue.php', './reliable-queue/queue.php');\""
-        ],
-        "post-update-cmd": [
-            "mkdir -p ./reliable-queue",
-            "php -r \"copy('config/queue.php', './reliable-queue/queue.php');\""
-        ]
+  "name": "fthi/reliable-queue",
+  "authors": [
+    {
+      "name": "farzin fthi",
+      "email": "farzin.fthi@gmail.com"
     }
+  ],
+  "require": {
+    "predis/predis": "1.1.1",
+    "ext-pcntl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Reliable\\": "src/"
+    },
+    "files": [
+      "config/queue.php"
+    ]
+  },
+  "bin": [
+    "bin/reliable-worker",
+    "bin/reliable-delayed",
+    "bin/reliable-sweep",
+    "bin/reliable-kill-workers",
+    "bin/reliable-run-workers",
+    "bin/reliable-publish-config"
+  ]
 }

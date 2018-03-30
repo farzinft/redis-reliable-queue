@@ -60,7 +60,7 @@ class AbstractQueue
 
     private function getConfigs()
     {
-        return include __DIR__ . '/../config/queue.php';
+        return require __DIR__ . '/../config/queue.php';
     }
 
     public function connector($options = [])
@@ -170,5 +170,18 @@ class AbstractQueue
         }
         return $this->redis->del('worker_pids');
     }
+
+    public static function publishConfig()
+    {
+        $configPath = __DIR__ . '/../config/queue.php';
+        $publishPath = __DIR__ . '/../../../../reliable-queue';
+        if (file_exists($configPath)) {
+            mkdir($publishPath, 0755);
+            symlink($configPath, $publishPath . '/config.php');
+        } else {
+            exit('error on creating symbolic config file');
+        }
+    }
+
 
 }
