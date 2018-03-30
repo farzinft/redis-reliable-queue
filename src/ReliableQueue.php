@@ -118,7 +118,7 @@ class ReliableQueue extends AbstractQueue implements IQueue
                              */
                            // $this->renqueue();
                             $this->log('renqueued job ' . json_encode($this->job));
-                            //$this->release();
+                            $this->release();
                         }
                     }
                 }

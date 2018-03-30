@@ -68,8 +68,7 @@ function bootLaravel()
 
         return $laravel;
     }
-
-    exit('can not load laravel application');
+    return null;
 }
 
 ?>
