@@ -10,14 +10,6 @@
         "predis/predis": "1.1.1",
         "ext-pcntl": "*"
     },
-    "bin": [
-        "bin/worker",
-        "bin/delayed",
-        "bin/sweep"
-    ],
-    "config": {
-        "bin-dir": "./reliable-queue"
-    },
     "autoload": {
         "psr-4": {
             "Reliable\\": "src/"
@@ -26,6 +18,14 @@
             "config/queue.php"
         ]
     },
+    "config": {
+        "bin-dir": "./reliable-queue"
+    },
+    "bin": [
+        "bin/worker",
+        "bin/delayed",
+        "bin/sweep"
+    ],
     "scripts":{
         "post-create-project-cmd": [
             "mkdir -p ./reliable-queue",
