@@ -27,10 +27,13 @@
         "bin/sweep"
     ],
     "scripts":{
-        "post-create-project-cmd": [
+        "post-install-cmd": [
             "mkdir -p ./reliable-queue",
-            "php -r \"copy('config/queue.php', './reliable-queue/queue.php');\"",
-            "ln -s config/queue.php ./reliable-queue/config.php"
+            "php -r \"copy('config/queue.php', './reliable-queue/queue.php');\""
+        ],
+        "post-update-cmd": [
+            "mkdir -p ./reliable-queue",
+            "php -r \"copy('config/queue.php', './reliable-queue/queue.php');\""
         ]
     }
 }
