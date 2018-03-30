@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 $files = array(
@@ -23,3 +24,4 @@ while (true) {
     while ($reliableQueue->sweep() !== false) ;
     sleep(1);
 }
+?>

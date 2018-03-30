@@ -4,6 +4,7 @@ namespace Reliable;
 
 
 use Exception;
+use Illuminate\Foundation\Application;
 use Reliable\Exceptions\ClassNotFoundException;
 use Reliable\Exceptions\MethodNotFoundException;
 
@@ -46,7 +47,7 @@ class ReliableQueue extends AbstractQueue implements IQueue
     }
     
 
-    public function dequeue()
+    public function dequeue(Application $laravel = null)
     {
         $this->setWorkerPids(getmypid());
 
@@ -73,7 +74,7 @@ class ReliableQueue extends AbstractQueue implements IQueue
 
                             static::log('calling job ' . json_encode($this->job));
 
-                            call_user_func([$classInstance, $method], $payload);
+                            call_user_func_array([$classInstance, $method], [$payload, $laravel]);
 
                         } else {
                             throw new MethodNotFoundException('method ' . $method . ' can not be found :' . json_encode($this->job));
@@ -87,7 +88,7 @@ class ReliableQueue extends AbstractQueue implements IQueue
 
                 } catch (Exception $e) {
 
-                    static::log($e->getMessage());
+                    static::log('got Exception: ' . $e->getMessage());
 
                     if ($e instanceof ClassNotFoundException || $e instanceof MethodNotFoundException) {
                         $this->release();
@@ -115,8 +116,9 @@ class ReliableQueue extends AbstractQueue implements IQueue
                             /**
                              * in this section we can save job in database
                              */
-                          //  $this->renqueue();
+                           // $this->renqueue();
                             $this->log('renqueued job ' . json_encode($this->job));
+                            //$this->release();
                         }
                     }
                 }

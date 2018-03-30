@@ -7,7 +7,16 @@
         }
     ],
     "require": {
-        "predis/predis": "1.1.1"
+        "predis/predis": "1.1.1",
+        "ext-pcntl": "*"
+    },
+    "bin": [
+        "bin/worker",
+        "bin/delayed",
+        "bin/sweep"
+    ],
+    "config": {
+        "bin-dir": "./reliable-queue"
     },
     "autoload": {
         "psr-4": {
@@ -15,6 +24,13 @@
         },
         "files": [
             "config/queue.php"
+        ]
+    },
+    "scripts":{
+        "post-create-project-cmd": [
+            "mkdir -p ./reliable-queue",
+            "php -r \"copy('config/queue.php', './reliable-queue/queue.php');\"",
+            "ln -s config/queue.php ./reliable-queue/config.php"
         ]
     }
 }
