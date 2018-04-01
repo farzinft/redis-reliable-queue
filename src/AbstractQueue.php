@@ -19,6 +19,10 @@ class AbstractQueue
     protected static $DELAYED_QUEUE;
     protected static $JOBTRY;
     protected static $DEFAULT_JOB_DELAY;
+
+    protected static $REDIS_SCHEME;
+    protected static $REDIS_IP;
+    protected static $REDIS_PORT;
     /**
      * @return mixed
      */
@@ -31,14 +35,7 @@ class AbstractQueue
     private function __construct($options = [])
     {
         $config = $this->getConfigs();
-        static::$PENDING_QUEUES = $config['PENDING_QUEUES'];
-        static::$PENDING_QUEUE_VALUES = $config['PENDING_QUEUE_VALUES'];
-        static::$WORKING_QUEUE = $config['WORKING_TIMESTAMP_QUEUE'];
-        static::$TIME_OUT = $config['QUEUE_TIMEOUT'];
-        static::$PROCESS_COUNT = $config['PROCESS_COUNT'];
-        static::$DELAYED_QUEUE = $config['DELAYED_QUEUE'];
-        static::$JOBTRY = $config['JOB_TRY_COUNT'];
-        static::$DEFAULT_JOB_DELAY = $config['DEFAULT_JOB_DELAY'];
+        $this->initParams($config);
         $this->redis = $this->connector($options);
     }
 
@@ -63,12 +60,27 @@ class AbstractQueue
         return require __DIR__ . '/../config/queue.php';
     }
 
+    protected function initParams($config)
+    {
+        static::$PENDING_QUEUES = $config['PENDING_QUEUES'];
+        static::$PENDING_QUEUE_VALUES = $config['PENDING_QUEUE_VALUES'];
+        static::$WORKING_QUEUE = $config['WORKING_TIMESTAMP_QUEUE'];
+        static::$TIME_OUT = $config['QUEUE_TIMEOUT'];
+        static::$PROCESS_COUNT = $config['PROCESS_COUNT'];
+        static::$DELAYED_QUEUE = $config['DELAYED_QUEUE'];
+        static::$JOBTRY = $config['JOB_TRY_COUNT'];
+        static::$DEFAULT_JOB_DELAY = $config['DEFAULT_JOB_DELAY'];
+        static::$REDIS_SCHEME = $config['redis']['scheme'];
+        static::$REDIS_IP = $config['redis']['ip'];
+        static::$REDIS_PORT = $config['redis']['port'];
+    }
+
     public function connector($options = [])
     {
         return new Client([
-            'scheme' => isset($options['scheme']) ? $options['scheme'] : 'tcp',
-            'host' => isset($options['host']) ? $options['host'] : '127.0.0.1',
-            'port' => isset($options['port']) ? $options['port'] : '6379',
+            'scheme' => static::$REDIS_SCHEME,
+            'host' => static::$REDIS_IP,
+            'port' => static::$REDIS_PORT,
         ], (isset($options['options']) && is_array($options['options'])) ? $options['options'] : []);
     }
 

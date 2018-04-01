@@ -1,6 +1,7 @@
 <?php
 
 return [
+
     'PENDING_QUEUES' => 'reliable:pending_list',
     'PENDING_QUEUE_VALUES' => 'reliable:pending_values',
     'WORKING_TIMESTAMP_QUEUE' => 'reliable:timestamp_working',
@@ -8,5 +9,12 @@ return [
     'QUEUE_TIMEOUT' => 20,
     'JOB_TRY_COUNT' => 5,
     'PROCESS_COUNT' => 2,
-    'DEFAULT_JOB_DELAY' => 5
+    'DEFAULT_JOB_DELAY' => 5,
+
+    //Redis Config
+    'redis' => [
+        'scheme' => 'tcp',
+        'ip' => '127.0.0.1',
+        'port' => '6379'
+    ]
 ];
