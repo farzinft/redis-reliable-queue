@@ -1,5 +1,5 @@
 {
-  "name": "fthi/reliable-queue",
+  "name": "farzinft/redis-reliable-queue",
   "authors": [
     {
       "name": "farzin fthi",
@@ -13,10 +13,7 @@
   "autoload": {
     "psr-4": {
       "Reliable\\": "src/"
-    },
-    "files": [
-      "config/queue.php"
-    ]
+    }
   },
   "bin": [
     "bin/reliable-worker",
