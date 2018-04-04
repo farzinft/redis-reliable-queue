@@ -77,11 +77,20 @@ class AbstractQueue
 
     public function connector($options = [])
     {
-        return new Client([
+        $client = new Client([
             'scheme' => static::$REDIS_SCHEME,
             'host' => static::$REDIS_IP,
             'port' => static::$REDIS_PORT,
         ], (isset($options['options']) && is_array($options['options'])) ? $options['options'] : []);
+
+        try {
+            $client->connect();
+        } catch (\Exception $e) {
+            exit($e->getMessage());
+        }
+
+        return $client;
+
     }
 
     public static function getInstance($options = [])
